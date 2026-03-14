@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FACEIT.CC | PRIVATE</title>
+    <title>FACEIT.CC | PRIVATE PLATFORM</title>
     <style>
         :root {
             --bg: #050505;
@@ -12,128 +12,111 @@
             --border: #151515;
             --text-dim: #555;
             --white: #d1d1d1;
+            --chat-bg: #070707;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg);
             color: var(--white);
-            font-family: 'Tahoma', sans-serif; /* Более "читтерский" шрифт */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Tahoma', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
         }
 
-        /* SNOW */
         .snow-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .flake { position: absolute; background: #fff; border-radius: 50%; opacity: 0.5; top: -20px; animation: fall linear infinite; }
+        .flake { position: absolute; background: #fff; border-radius: 50%; opacity: 0.3; top: -20px; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(110vh); } }
 
-        /* COMPACT CARD */
         .main-card {
-            position: relative;
-            z-index: 10;
-            width: 320px; /* Уменьшили размер квадрата */
+            position: relative; z-index: 10;
+            width: 380px; /* Немного расширили для форума */
             background: var(--container);
             border: 1px solid var(--border);
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
-        /* TOP DECORATIVE LINE */
-        .top-line {
-            height: 2px;
-            background: linear-gradient(90deg, #ff4a22 0%, #802511 100%);
-        }
-
-        .card-content { padding: 25px; }
-
-        .header {
+        .top-line { height: 2px; background: linear-gradient(90deg, var(--accent) 0%, #802511 100%); }
+        
+        /* NAVIGATION */
+        .nav-bar {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+            background: #0d0d0d;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
         }
-
-        .brand { font-size: 16px; font-weight: bold; letter-spacing: 1px; }
-        .brand span { color: var(--accent); }
-        .version { font-size: 9px; color: var(--text-dim); }
-
-        /* INPUTS */
-        .group { margin-bottom: 15px; }
-        label {
-            display: block;
+        .nav-item {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
             font-size: 9px;
             text-transform: uppercase;
+            cursor: pointer;
             color: var(--text-dim);
-            margin-bottom: 5px;
-            letter-spacing: 1px;
+            transition: 0.2s;
+        }
+        .nav-item:hover { color: var(--white); }
+        .nav-item.active {
+            color: var(--accent);
+            background: rgba(255, 74, 34, 0.05);
+            border-bottom: 1px solid var(--accent);
         }
 
+        .card-content { padding: 20px; min-height: 300px; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* HEADER */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+        }
+        .brand { font-size: 14px; font-weight: bold; }
+        .brand span { color: var(--accent); }
+
+        /* FORM & INPUTS */
+        .group { margin-bottom: 12px; }
+        label { display: block; font-size: 8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
         input {
-            width: 100%;
+            width: 100%; background: #000; border: 1px solid var(--border);
+            padding: 8px; color: #fff; font-size: 11px; outline: none; box-sizing: border-box;
+        }
+        .action-btn {
+            width: 100%; background: transparent; border: 1px solid var(--accent);
+            color: var(--accent); padding: 10px; font-size: 10px; font-weight: bold;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+        }
+        .action-btn:hover { background: var(--accent); color: #fff; }
+
+        /* FORUM / NEWS STYLE */
+        .news-item {
+            background: var(--chat-bg);
+            border: 1px solid var(--border);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .news-date { font-size: 8px; color: var(--accent); margin-bottom: 5px; }
+        .news-title { font-size: 11px; font-weight: bold; margin-bottom: 5px; }
+        .news-text { font-size: 10px; color: #888; line-height: 1.4; }
+
+        /* CHAT STYLE */
+        .chat-box {
+            height: 180px;
+            overflow-y: auto;
             background: #000;
             border: 1px solid var(--border);
             padding: 10px;
-            color: #fff;
-            font-size: 11px;
-            outline: none;
-            box-sizing: border-box;
-            transition: 0.2s;
-        }
-
-        input:focus { border-color: var(--accent); }
-
-        /* BUTTON */
-        .action-btn {
-            width: 100%;
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 10px;
+            margin-bottom: 10px;
             font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.3s;
         }
+        .msg { margin-bottom: 8px; border-left: 2px solid var(--border); padding-left: 5px; }
+        .msg span { color: var(--accent); font-weight: bold; }
+        .msg-text { color: #ccc; margin-left: 5px; }
 
-        .action-btn:hover {
-            background: var(--accent);
-            color: #fff;
-            box-shadow: 0 0 15px rgba(255, 74, 34, 0.3);
-        }
-
-        /* SYSTEM STATUS AREA (Добавляем детали как на скринах софтов) */
-        .stats-area {
-            margin-top: 20px;
-            background: #070707;
-            border: 1px solid var(--border);
-            padding: 10px;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            margin-bottom: 5px;
-        }
-
-        .stat-label { color: var(--text-dim); }
-        .stat-value { color: #55ff55; } /* Зеленый статус */
-
-        .footer-note {
-            font-size: 8px;
-            color: #333;
-            text-align: center;
-            margin-top: 15px;
-            text-transform: uppercase;
-        }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); }
     </style>
 </head>
 <body>
@@ -142,52 +125,108 @@
 
     <div class="main-card">
         <div class="top-line"></div>
+        
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="openTab('loader')">Loader</div>
+            <div class="nav-item" onclick="openTab('news')">News</div>
+            <div class="nav-item" onclick="openTab('chat')">Chat</div>
+            <div class="nav-item" onclick="openTab('hvh')">HVH Chat</div>
+        </div>
+
         <div class="card-content">
             
-            <div class="header">
-                <div class="brand">FACEIT<span>.CC</span></div>
-                <div class="version">BUILD v1.0.4</div>
-            </div>
-
-            <form action="/api/register" method="POST">
-                <div class="group">
-                    <label>User Identity</label>
-                    <input type="text" name="nickname" placeholder="Nickname" required>
+            <div id="loader" class="tab-content active">
+                <div class="header">
+                    <div class="brand">FACEIT<span>.CC</span></div>
+                    <div style="font-size: 9px; color: #55ff55;">STATUS: UNDETECTED</div>
                 </div>
-
-                <div class="group">
-                    <label>Module / Software</label>
-                    <input type="text" name="soft" placeholder="Current soft">
-                </div>
-
-                <button type="submit" class="action-btn">Initialize Session</button>
-            </form>
-
-            <div class="stats-area">
-                <div class="stat-row">
-                    <span class="stat-label">Authentication</span>
-                    <span class="stat-value">Success</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">System Status</span>
-                    <span class="stat-value" style="color: #55ff55;">Undetected</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Active Users</span>
-                    <span class="stat-value" style="color: var(--white);">1,248</span>
+                <div id="form-container">
+                    <div class="group">
+                        <label>Identity</label>
+                        <input type="text" id="nickname" placeholder="Username">
+                    </div>
+                    <div class="group">
+                        <label>Module</label>
+                        <input type="text" id="soft" placeholder="v1.0.4 Private">
+                    </div>
+                    <button class="action-btn" onclick="sendData()">Initialize</button>
                 </div>
             </div>
 
-            <div class="footer-note">Welcome back, user. Stay safe.</div>
+            <div id="news" class="tab-content">
+                <div class="news-item">
+                    <div class="news-date">MARCH 14, 2026</div>
+                    <div class="news-title">Update v1.0.4 Released</div>
+                    <div class="news-text">Improved bypass for Faceit AC. Added RageBot optimization for low-end PCs.</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">MARCH 10, 2026</div>
+                    <div class="news-title">Security Patch</div>
+                    <div class="news-text">Internal code obfuscation updated. Use "Safe Mode" for matchmaking.</div>
+                </div>
+            </div>
+
+            <div id="chat" class="tab-content">
+                <div class="chat-box" id="general-chat">
+                    <div class="msg"><span>Admin:</span><span class="msg-text">Welcome to Faceit.cc private chat.</span></div>
+                    <div class="msg"><span>User1337:</span><span class="msg-text">Is it safe for main acc?</span></div>
+                    <div class="msg"><span>Mod:</span><span class="msg-text">Always safe if you use low settings.</span></div>
+                </div>
+                <input type="text" placeholder="Type message..." style="width: 100%;">
+            </div>
+
+            <div id="hvh" class="tab-content">
+                <div class="chat-box">
+                    <div class="msg"><span>SkeetUser:</span><span class="msg-text">1 on 1 hvh mirage?</span></div>
+                    <div class="msg"><span>Neverlose:</span><span class="msg-text">Go server 4, I wait.</span></div>
+                    <div class="msg"><span>HH_Boss:</span><span class="msg-text">My resolver is better today.</span></div>
+                </div>
+                <input type="text" placeholder="Challenge someone..." style="width: 100%;">
+            </div>
+
         </div>
     </div>
 
     <script>
+        // Переключение вкладок
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const navs = document.querySelectorAll('.nav-item');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            navs.forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Отправка данных (как мы делали в Replit)
+        async function sendData() {
+            const nick = document.getElementById('nickname').value;
+            const software = document.getElementById('soft').value;
+            if(!nick) return alert("Enter nickname!");
+
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nickname: nick, soft: software })
+            });
+
+            if (response.ok) {
+                document.getElementById('form-container').innerHTML = `
+                    <div style="text-align:center; padding: 20px; border: 1px solid var(--accent);">
+                        <div style="color:var(--accent); font-size: 12px; margin-bottom: 10px;">SUCCESS</div>
+                        <div style="font-size: 9px; color: #555;">Session started for ${nick}</div>
+                    </div>`;
+            }
+        }
+
+        // Снег
         const container = document.getElementById('snow');
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 30; i++) {
             const flake = document.createElement('div');
             flake.className = 'flake';
-            const size = Math.random() * 3 + 1 + 'px';
+            const size = Math.random() * 2 + 1 + 'px';
             flake.style.width = size; flake.style.height = size;
             flake.style.left = Math.random() * 100 + 'vw';
             flake.style.animationDuration = Math.random() * 5 + 3 + 's';
