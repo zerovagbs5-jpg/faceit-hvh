@@ -3,236 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FACEIT.CC | PRIVATE PLATFORM</title>
+    <title>FACEIT.CC | PRIVATE NETWORK</title>
     <style>
+        /* CSS VARIABLES & RESET */
         :root {
+            --accent: #ff4a22;
+            --accent-dim: #802511;
             --bg: #050505;
-            --container: #0a0a0a;
-            --accent: #ff4a22; 
-            --border: #151515;
-            --text-dim: #555;
-            --white: #d1d1d1;
-            --chat-bg: #070707;
+            --panel: #0a0a0a;
+            --border: #161616;
+            --text-main: #d1d1d1;
+            --text-dim: #444;
+            --success: #55ff55;
         }
 
+        * { box-sizing: border-box; outline: none; }
         body {
             margin: 0; padding: 0;
-            background-color: var(--bg);
-            color: var(--white);
-            font-family: 'Tahoma', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            font-size: 12px;
             display: flex; justify-content: center; align-items: center;
             height: 100vh; overflow: hidden;
         }
 
-        .snow-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .flake { position: absolute; background: #fff; border-radius: 50%; opacity: 0.3; top: -20px; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(110vh); } }
+        /* SNOW ANIMATION SYSTEM */
+        canvas#snow {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
 
-        .main-card {
+        /* MAIN WRAPPER */
+        .app-container {
             position: relative; z-index: 10;
-            width: 380px; /* Немного расширили для форума */
-            background: var(--container);
+            width: 340px;
+            background: var(--panel);
             border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .top-line { height: 2px; background: linear-gradient(90deg, var(--accent) 0%, #802511 100%); }
-        
-        /* NAVIGATION */
-        .nav-bar {
-            display: flex;
-            background: #0d0d0d;
-            border-bottom: 1px solid var(--border);
-        }
-        .nav-item {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            font-size: 9px;
-            text-transform: uppercase;
-            cursor: pointer;
-            color: var(--text-dim);
-            transition: 0.2s;
-        }
-        .nav-item:hover { color: var(--white); }
-        .nav-item.active {
-            color: var(--accent);
-            background: rgba(255, 74, 34, 0.05);
-            border-bottom: 1px solid var(--accent);
-        }
+        .app-container.forum-mode { width: 700px; }
 
-        .card-content { padding: 20px; min-height: 300px; }
+        /* DECORATION */
+        .top-glow { height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-dim)); width: 100%; }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        /* AUTH SECTIONS */
+        .view { padding: 30px; }
+        .hidden { display: none !important; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* HEADER */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+            margin-bottom: 25px; border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
         }
-        .brand { font-size: 14px; font-weight: bold; }
-        .brand span { color: var(--accent); }
 
-        /* FORM & INPUTS */
-        .group { margin-bottom: 12px; }
-        label { display: block; font-size: 8px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
-        input {
+        .logo { font-weight: 900; letter-spacing: 2px; font-size: 14px; }
+        .logo span { color: var(--accent); }
+
+        /* INPUTS */
+        .field { margin-bottom: 18px; }
+        .field label {
+            display: block; font-size: 9px; text-transform: uppercase;
+            color: var(--text-dim); margin-bottom: 6px; letter-spacing: 1px;
+        }
+        .field input {
             width: 100%; background: #000; border: 1px solid var(--border);
-            padding: 8px; color: #fff; font-size: 11px; outline: none; box-sizing: border-box;
+            padding: 12px; color: #fff; font-size: 12px;
+            transition: border 0.3s;
         }
-        .action-btn {
-            width: 100%; background: transparent; border: 1px solid var(--accent);
-            color: var(--accent); padding: 10px; font-size: 10px; font-weight: bold;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s;
-        }
-        .action-btn:hover { background: var(--accent); color: #fff; }
+        .field input:focus { border-color: var(--accent); }
 
-        /* FORUM / NEWS STYLE */
-        .news-item {
-            background: var(--chat-bg);
-            border: 1px solid var(--border);
-            padding: 10px;
-            margin-bottom: 10px;
+        /* BUTTONS */
+        .btn {
+            width: 100%; padding: 14px;
+            background: transparent; border: 1px solid var(--accent);
+            color: var(--accent); font-weight: bold; font-size: 10px;
+            text-transform: uppercase; cursor: pointer;
+            transition: all 0.3s;
         }
-        .news-date { font-size: 8px; color: var(--accent); margin-bottom: 5px; }
-        .news-title { font-size: 11px; font-weight: bold; margin-bottom: 5px; }
-        .news-text { font-size: 10px; color: #888; line-height: 1.4; }
+        .btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px rgba(255, 74, 34, 0.2); }
 
-        /* CHAT STYLE */
-        .chat-box {
-            height: 180px;
-            overflow-y: auto;
-            background: #000;
-            border: 1px solid var(--border);
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 10px;
+        /* FORUM NAVIGATION */
+        .forum-nav {
+            display: flex; background: #080808;
+            border-bottom: 1px solid var(--border);
         }
-        .msg { margin-bottom: 8px; border-left: 2px solid var(--border); padding-left: 5px; }
-        .msg span { color: var(--accent); font-weight: bold; }
-        .msg-text { color: #ccc; margin-left: 5px; }
+        .nav-tab {
+            padding: 15px; flex: 1; text-align: center;
+            font-size: 10px; text-transform: uppercase;
+            cursor: pointer; color: var(--text-dim);
+            transition: 0.3s;
+        }
+        .nav-tab.active { color: var(--accent); background: #0c0c0c; border-bottom: 2px solid var(--accent); }
 
-        ::-webkit-scrollbar { width: 3px; }
+        /* CHAT SYSTEM */
+        .forum-body { height: 400px; display: flex; flex-direction: column; }
+        .chat-history {
+            flex: 1; overflow-y: auto; padding: 20px;
+            background: #060606; display: flex; flex-direction: column;
+        }
+        .message-row { margin-bottom: 12px; animation: msgIn 0.3s ease-out; }
+        @keyframes msgIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .message-row b { color: var(--accent); margin-right: 8px; font-size: 11px; }
+        .message-row i { color: #333; font-style: normal; font-size: 10px; float: right; }
+        .message-text { color: #bbb; }
+
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
+        .chat-input-area input { flex: 1; background: #000; border: 1px solid var(--border); padding: 10px; color: #fff; }
+
+        /* ALERTS */
+        .status-msg {
+            padding: 10px; font-size: 10px; text-align: center;
+            margin-bottom: 15px; border: 1px solid #300; color: #f55;
+            display: none;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div class="snow-layer" id="snow"></div>
+<canvas id="snow"></canvas>
 
-    <div class="main-card">
-        <div class="top-line"></div>
-        
-        <div class="nav-bar">
-            <div class="nav-item active" onclick="openTab('loader')">Loader</div>
-            <div class="nav-item" onclick="openTab('news')">News</div>
-            <div class="nav-item" onclick="openTab('chat')">Chat</div>
-            <div class="nav-item" onclick="openTab('hvh')">HVH Chat</div>
+<div class="app-container" id="app">
+    <div class="top-glow"></div>
+
+    <div id="view-reg" class="view">
+        <div class="header">
+            <div class="logo">FACEIT<span>.CC</span></div>
+            <div style="font-size: 9px; color: var(--text-dim);">V.1.0.6 PRIVATE</div>
         </div>
-
-        <div class="card-content">
-            
-            <div id="loader" class="tab-content active">
-                <div class="header">
-                    <div class="brand">FACEIT<span>.CC</span></div>
-                    <div style="font-size: 9px; color: #55ff55;">STATUS: UNDETECTED</div>
-                </div>
-                <div id="form-container">
-                    <div class="group">
-                        <label>Identity</label>
-                        <input type="text" id="nickname" placeholder="Username">
-                    </div>
-                    <div class="group">
-                        <label>Module</label>
-                        <input type="text" id="soft" placeholder="v1.0.4 Private">
-                    </div>
-                    <button class="action-btn" onclick="sendData()">Initialize</button>
-                </div>
-            </div>
-
-            <div id="news" class="tab-content">
-                <div class="news-item">
-                    <div class="news-date">MARCH 14, 2026</div>
-                    <div class="news-title">Update v1.0.4 Released</div>
-                    <div class="news-text">Improved bypass for Faceit AC. Added RageBot optimization for low-end PCs.</div>
-                </div>
-                <div class="news-item">
-                    <div class="news-date">MARCH 10, 2026</div>
-                    <div class="news-title">Security Patch</div>
-                    <div class="news-text">Internal code obfuscation updated. Use "Safe Mode" for matchmaking.</div>
-                </div>
-            </div>
-
-            <div id="chat" class="tab-content">
-                <div class="chat-box" id="general-chat">
-                    <div class="msg"><span>Admin:</span><span class="msg-text">Welcome to Faceit.cc private chat.</span></div>
-                    <div class="msg"><span>User1337:</span><span class="msg-text">Is it safe for main acc?</span></div>
-                    <div class="msg"><span>Mod:</span><span class="msg-text">Always safe if you use low settings.</span></div>
-                </div>
-                <input type="text" placeholder="Type message..." style="width: 100%;">
-            </div>
-
-            <div id="hvh" class="tab-content">
-                <div class="chat-box">
-                    <div class="msg"><span>SkeetUser:</span><span class="msg-text">1 on 1 hvh mirage?</span></div>
-                    <div class="msg"><span>Neverlose:</span><span class="msg-text">Go server 4, I wait.</span></div>
-                    <div class="msg"><span>HH_Boss:</span><span class="msg-text">My resolver is better today.</span></div>
-                </div>
-                <input type="text" placeholder="Challenge someone..." style="width: 100%;">
-            </div>
-
+        <div id="reg-alert" class="status-msg"></div>
+        <div class="field">
+            <label>Master Login</label>
+            <input type="text" id="r-login">
         </div>
+        <div class="field">
+            <label>Master Password</label>
+            <input type="password" id="r-pass">
+        </div>
+        <div class="field">
+            <label>Public Nickname</label>
+            <input type="text" id="r-nick">
+        </div>
+        <div class="field">
+            <label>Invitation Key</label>
+            <input type="text" id="r-invite">
+        </div>
+        <button class="btn" onclick="api.register()">Initialize Account</button>
     </div>
 
-    <script>
-        // Переключение вкладок
-        function openTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            const navs = document.querySelectorAll('.nav-item');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            navs.forEach(nav => nav.classList.remove('active'));
-            
-            document.getElementById(tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
+    <div id="view-login" class="view hidden">
+        <div class="header">
+            <div class="logo">FACEIT<span>.CC</span></div>
+            <div style="color: var(--success); font-size: 8px;">ACCOUNT CREATED</div>
+        </div>
+        <div class="field">
+            <label>Login</label>
+            <input type="text" id="l-login">
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="l-pass">
+        </div>
+        <button class="btn" onclick="api.login()">Authenticate</button>
+    </div>
+
+    <div id="view-forum" class="hidden">
+        <div class="forum-nav">
+            <div class="nav-tab active" onclick="ui.switchTab('news')">Network News</div>
+            <div class="nav-tab" onclick="ui.switchTab('chat')">Live Chat</div>
+            <div class="nav-tab" onclick="ui.switchTab('team')">Team Finder</div>
+        </div>
+        
+        <div class="forum-body">
+            <div id="tab-news" class="view">
+                <div style="border-left: 2px solid var(--accent); padding-left: 15px; margin-bottom: 25px;">
+                    <div style="color:var(--accent); font-weight: bold; margin-bottom: 5px;">CORE UPDATE V.1.0.6</div>
+                    <div style="color:#777; font-size: 11px;">Faceit AC bypass methods have been updated. Ensure you use the "Cloud-Loader" for injection. All HWID bans cleared.</div>
+                </div>
+                <div style="border-left: 2px solid #333; padding-left: 15px;">
+                    <div style="color:#555; font-weight: bold; margin-bottom: 5px;">DATABASE RESET</div>
+                    <div style="color:#777; font-size: 11px;">Inactive accounts (90+ days) will be purged on March 20.</div>
+                </div>
+            </div>
+
+            <div id="tab-chat" class="hidden" style="height:100%; display: flex; flex-direction: column;">
+                <div class="chat-history" id="chat-stream"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-msg" placeholder="Write to community...">
+                    <button class="btn" style="width: 80px;" onclick="api.sendChat()">SEND</button>
+                </div>
+            </div>
+
+            <div id="tab-team" class="view hidden">
+                <div style="text-align:center; padding: 40px; color: var(--text-dim);">
+                    Search for teammates is currently restricted to <b>LEGENDARY</b> tier users.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* SNOW ENGINE */
+const canvas = document.getElementById('snow');
+const ctx = canvas.getContext('2d');
+let width, height, flakes = [];
+
+function initSnow() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    flakes = [];
+    for(let i=0; i<150; i++) {
+        flakes.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            s: Math.random() * 2 + 1,
+            d: Math.random() * 1
+        });
+    }
+}
+
+function drawSnow() {
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle = "rgba(255,255,255,0.4)";
+    ctx.beginPath();
+    flakes.forEach(f => {
+        ctx.moveTo(f.x, f.y);
+        ctx.arc(f.x, f.y, f.s, 0, Math.PI*2);
+        f.y += f.s * 0.5;
+        if(f.y > height) f.y = -10;
+    });
+    ctx.fill();
+    requestAnimationFrame(drawSnow);
+}
+
+window.onresize = initSnow;
+initSnow(); drawSnow();
+
+/* APP LOGIC */
+const ui = {
+    currentUser: "Guest",
+    showView(id) {
+        document.querySelectorAll('.view, #view-forum, #view-login, #view-reg').forEach(el => el.classList.add('hidden'));
+        const target = document.getElementById('view-'+id);
+        target.classList.remove('hidden');
+        if(id === 'forum') document.getElementById('app').classList.add('forum-mode');
+    },
+    switchTab(name) {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        ['news', 'chat', 'team'].forEach(t => document.getElementById('tab-'+t).classList.add('hidden'));
+        document.getElementById('tab-'+name).classList.remove('hidden');
+        if(name === 'chat') api.loadChat();
+    }
+};
+
+const api = {
+    async register() {
+        const payload = {
+            login: document.getElementById('r-login').value,
+            password: document.getElementById('r-pass').value,
+            nickname: document.getElementById('r-nick').value,
+            invite: document.getElementById('r-invite').value
+        };
+        const res = await fetch('/api/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(data.success) {
+            ui.showView('login');
+        } else {
+            const err = document.getElementById('reg-alert');
+            err.innerText = data.message;
+            err.style.display = 'block';
         }
-
-        // Отправка данных (как мы делали в Replit)
-        async function sendData() {
-            const nick = document.getElementById('nickname').value;
-            const software = document.getElementById('soft').value;
-            if(!nick) return alert("Enter nickname!");
-
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ nickname: nick, soft: software })
-            });
-
-            if (response.ok) {
-                document.getElementById('form-container').innerHTML = `
-                    <div style="text-align:center; padding: 20px; border: 1px solid var(--accent);">
-                        <div style="color:var(--accent); font-size: 12px; margin-bottom: 10px;">SUCCESS</div>
-                        <div style="font-size: 9px; color: #555;">Session started for ${nick}</div>
-                    </div>`;
-            }
+    },
+    async login() {
+        const login = document.getElementById('l-login').value;
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ login, password: document.getElementById('l-pass').value })
+        });
+        if(res.ok) {
+            ui.currentUser = login;
+            ui.showView('forum');
         }
+    },
+    async loadChat() {
+        const res = await fetch('/api/chat');
+        const msgs = await res.json();
+        const stream = document.getElementById('chat-stream');
+        stream.innerHTML = msgs.map(m => `
+            <div class="message-row">
+                <b>${m.user}:</b> <span class="message-text">${m.text}</span>
+                <i>${m.time}</i>
+            </div>
+        `).join('');
+        stream.scrollTop = stream.scrollHeight;
+    },
+    async sendChat() {
+        const input = document.getElementById('chat-msg');
+        if(!input.value) return;
+        await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user: ui.currentUser, text: input.value })
+        });
+        input.value = "";
+        this.loadChat();
+    }
+};
 
-        // Снег
-        const container = document.getElementById('snow');
-        for (let i = 0; i < 30; i++) {
-            const flake = document.createElement('div');
-            flake.className = 'flake';
-            const size = Math.random() * 2 + 1 + 'px';
-            flake.style.width = size; flake.style.height = size;
-            flake.style.left = Math.random() * 100 + 'vw';
-            flake.style.animationDuration = Math.random() * 5 + 3 + 's';
-            flake.style.animationDelay = Math.random() * 5 + 's';
-            container.appendChild(flake);
-        }
-    </script>
+// Auto-update chat
+setInterval(() => {
+    if(!document.getElementById('tab-chat').classList.contains('hidden')) api.loadChat();
+}, 5000);
+
+</script>
 </body>
 </html>
